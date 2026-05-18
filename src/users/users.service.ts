@@ -15,18 +15,22 @@ export class UsersService {
   }
 
   findAll() {
-    return `This action returns all users`;
+    return this.repo.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  findOneById(id: number) {
+    return this.repo.findOneBy({ id });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  findByEmail(email: string) {
+    return this.repo.findOneBy({ email });
+  }
+
+  update(id: number, updateUserDto: Partial<UpdateUserDto>) {
+    return this.repo.update({ id }, updateUserDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} user`;
+    return this.repo.delete({ id });
   }
 }
