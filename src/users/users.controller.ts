@@ -6,7 +6,7 @@ import {
   Patch,
   Param,
   Delete,
-  Query, Session,
+  Query, Session, UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -14,9 +14,13 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Serialize } from '../interceptors/serialize.interceptor';
 import { UserDto } from './dto/user.dto';
 import { AuthService } from './auth.service';
+import { CurrentUser } from "./decorators/current-user.decorator";
+import { CurrentUserInterceptor } from "../interceptors/current-user.interceptor";
+import { User } from "./entities/user.entity";
 
 @Controller('auth')
 @Serialize(UserDto)
+@UseInterceptors(CurrentUserInterceptor) // to add an interceptor to controller
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
@@ -24,8 +28,8 @@ export class UsersController {
   ) {}
 
   @Get('whoami')
-  whoAmI(@Session() session:any){
-    return this.usersService.findOneById(session.userId);
+  whoAmI(@CurrentUser() user: User){
+    return user;
   }
 
   @Post('/signup')
