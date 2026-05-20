@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
@@ -7,30 +7,34 @@ import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectRepository(User) private repo: Repository<User>) {}
+    constructor(@InjectRepository(User) private repo: Repository<User>) {
+    }
 
-  create({ email, password }: CreateUserDto) {
-    const user = this.repo.create({ email, password });
-    return this.repo.save(user);
-  }
+    create({email, password}: CreateUserDto) {
+        const user = this.repo.create({email, password});
+        return this.repo.save(user);
+    }
 
-  findAll() {
-    return this.repo.find();
-  }
+    findAll() {
+        return this.repo.find();
+    }
 
-  findOneById(id: number) {
-    return this.repo.findOneBy({ id });
-  }
+    findOneById(id: number) {
+        if (!id) {
+            throw new BadRequestException('User not found');
+        }
+        return this.repo.findOneBy({id});
+    }
 
-  findByEmail(email: string) {
-    return this.repo.findOneBy({ email });
-  }
+    findByEmail(email: string) {
+        return this.repo.findOneBy({email});
+    }
 
-  update(id: number, updateUserDto: Partial<UpdateUserDto>) {
-    return this.repo.update({ id }, updateUserDto);
-  }
+    update(id: number, updateUserDto: Partial<UpdateUserDto>) {
+        return this.repo.update({id}, updateUserDto);
+    }
 
-  remove(id: number) {
-    return this.repo.delete({ id });
-  }
+    remove(id: number) {
+        return this.repo.delete({id});
+    }
 }
